@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <head th:include="commom::title('添加管理员')"></head>
+    <style>
+        body {
+            background-color: #ffffff;
+        }
+    </style>
+</head>
+<body>
+<div class="layui-form layui-form-pane">
+    <div class="layui-form-item" >
+        <label class="layui-form-label required">事故</label>
+        <div class="layui-input-block">
+            <input type="text" name="accident" lay-verify="required" placeholder="请输入事故名称" th:value="${accidentRecord.accident}" value="" class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item" >
+        <label class="layui-form-label required" >发生时间</label>
+        <div class="layui-input-block">
+            <input type="text" name="accTime" lay-verify="required" placeholder="请输入发生时间" th:value="${accidentRecord.accTime}" value="" class="layui-input">
+        </div>
+    </div>
+
+    <div class="layui-form-item" >
+        <label class="layui-form-label required" >原因</label>
+        <div class="layui-input-block">
+            <input type="text" name="detail" lay-verify="required" placeholder="请输入原因" th:value="${accidentRecord.detail}" value="" class="layui-input">
+        </div>
+    </div>
+
+    <div class="layui-form-item" >
+        <label class="layui-form-label required">损失</label>
+        <div class="layui-input-block">
+            <input type="text" name="loss" lay-verify="required" placeholder="请输入损失" th:value="${accidentRecord.loss}" value="" class="layui-input">
+        </div>
+        <input type="hidden" name="id" th:value="${accidentRecord.id}">
+    </div>
+
+    <div class="layui-form-item">
+        <div class="layui-input-block" >
+            <button class="layui-btn layui-btn-normal" style="width: 80%"  lay-submit lay-filter="altBtn">确认修改</button>
+        </div>
+    </div>
+</div>
+<script th:src="@{/static/lib/layui-v2.5.5/layui.js}" charset="utf-8"></script>
+<script>
+    layui.use(['form','layer'], function () {
+        const form = layui.form,
+            layer = layui.layer,
+            $ = layui.$;
+
+
+        form.on('submit(altBtn)', function (data) {
+            $.ajax({
+                url:'/root/modifyAcc',
+                data:data.field,
+                dataType:'json',
+                type:'post',
+                success:function (data) {
+                    if (data.code==200){
+                        layer.msg(data.msg,{icon:1});
+                    }else{
+                        layer.msg(data.msg,{icon:2});
+                    }
+                    setTimeout(function () {
+                        var index = parent.layer.getFrameIndex(window.name);
+                        parent.layer.close(index);
+                        window.parent.location.reload();
+                    }, 1000);
+                }
+            })
+            return false;
+        });
+
+    });
+</script>
+</body>
+</html>

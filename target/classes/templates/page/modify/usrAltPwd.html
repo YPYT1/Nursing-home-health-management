@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <head th:include="commom::title('修改密码')"></head>
+</head>
+<body>
+<form class="layui-form">
+    <div class="layui-form-item">
+        <div class="layui-inline" style="width: 85%">
+            <input type="password" id="pwd" name="pwd"  lay-reqtext="必填项，岂能为空？" value=""
+                   lay-verify="required" placeholder="新密码"  autocomplete="off" class="layui-input">
+        </div>
+    </div>
+
+    <!-- 确认密码 -->
+    <div class="layui-form-item">
+        <div class="layui-inline" style="width: 85%">
+            <input type="password" id="rpwd" name="rpwd"  lay-reqtext="必填项，岂能为空？" lay-verify="required" value=""
+                   placeholder="重复新密码" autocomplete="off" class="layui-input">
+        <!-- 对号 -->
+            <i class="layui-icon" id="rpri" style="color: green;font-weight: bolder;" hidden></i>
+        <!-- 错号 -->
+            <i class="layui-icon" id="rpwr" style="color: red; font-weight: bolder;" hidden>ဆ</i>
+    </div>
+
+    <div class="layui-form-item login-btn" style="width: 85%">
+        <button type="submit" lay-submit lay-filter="sub" class="layui-btn">确认修改</button>
+    </div>
+</form>
+
+<script th:src="@{/static/lib/layui-v2.5.5/layui.js}" charset="utf-8"></script>
+<script>
+    layui.use(['form','jquery','layer'], function () {
+        const form = layui.form,
+                 $ = layui.jquery,
+             layer = layui.layer;
+
+        //验证两次密码是否一致
+        $('#rpwd').blur(function () {
+            if ($('#pwd').val() != $('#rpwd').val()) {
+                $('#rpwr').removeAttr('hidden');
+                $('#rpri').attr('hidden', 'hidden');
+                layer.msg('两次输入密码不一致!');
+            } else {
+                $('#rpri').removeAttr('hidden');
+                $('#rpwr').attr('hidden', 'hidden');
+            }
+        });
+
+
+        form.on('submit(sub)', function(data) {
+            $.ajax({
+                url:'/root/usrAltPwd',
+                data:data.field,
+                dataType:'json',
+                type:'post',
+                success:function(data){
+                    if (data.code==0) {
+                        layer.alert(data.msg,function(){
+                            window.parent.location.href = "/";
+                            parent.layer.close(index);//关闭弹出层
+                        });
+                    }else {
+                        layer.msg(data.msg);
+                    }
+                }
+            })
+            //防止页面跳转
+            return false;
+        });
+
+
+    });
+</script>
+</body>
+</html>

@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <head th:include="commom::title('养老院后台管理系统')"></head>
+</head>
+<form class="layui-form layui-form-pane" >
+<div>
+    <div class="layui-form-item" >
+        <label class="layui-form-label required">登录名</label>
+        <div class="layui-input-block">
+            <input type="text"  lay-verify="required" th:value="${session.root.name}" disabled class="layui-input">
+        </div>
+    </div>
+
+    <div class="layui-form-item" >
+        <label class="layui-form-label required" >姓名</label>
+        <div class="layui-input-block">
+            <input type="text"  lay-verify="required" th:value="${session.root.nickName}" disabled class="layui-input">
+        </div>
+    </div>
+
+</div>
+</form>
+<body>
+
+<script th:src="@{/static/lib/layui-v2.5.5/layui.js}" charset="utf-8"></script>
+<script>
+    layui.use(['form', 'table','layer','laypage'], function () {
+        const form = layui.form
+    })
+</script>
+
+</body>
+</html>

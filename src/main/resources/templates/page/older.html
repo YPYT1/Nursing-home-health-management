@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <head th:include="commom::title('养老院后台管理系统')"></head>
+</head>
+<body>
+
+<div style="height: 20px"></div>
+
+<div style="text-align: center; border-style: inset">
+    <h3 th:text="'体检时间：'+ ${session.older.createTime}"></h3>
+</div>
+
+<div style="text-align: center">
+<form class="layui-form layui-form-pane">
+    <div style="border-style: outset">
+        <div class="layui-form-item" >
+            <div class="layui-inline"/>
+            <label class="layui-form-label ">老人姓名</label>
+            <div class="layui-input-inline">
+                <input type="text"  lay-verify="required" th:value="${session.older.name}" disabled class="layui-input">
+            </div>
+
+            <label class="layui-form-label " >性别</label>
+            <div class="layui-input-inline">
+                <input type="text"  lay-verify="required" th:value="${session.older.sex}" disabled class="layui-input">
+            </div>
+
+            <label class="layui-form-label " >出生</label>
+            <div class="layui-input-inline">
+                <input type="text"  lay-verify="required" th:value="${session.older.born}" disabled class="layui-input">
+            </div>
+        </div>
+
+
+        <div class="layui-form-item" >
+            <div class="layui-inline"/>
+            <label class="layui-form-label " >身高(cm)</label>
+            <div class="layui-input-inline">
+                <input type="text"  lay-verify="required" th:value="${session.older.height}" disabled class="layui-input">
+            </div>
+            <label class="layui-form-label " >体重(kg)</label>
+            <div class="layui-input-inline">
+                <input type="text"  lay-verify="required" th:value="${session.older.weight}" disabled class="layui-input">
+            </div>
+            <label class="layui-form-label " >抽烟</label>
+            <div class="layui-input-inline">
+                <input type="text"  lay-verify="required" th:value="${session.older.smoke}" disabled class="layui-input">
+            </div>
+        </div>
+
+
+        <div class="layui-form-item" >
+            <div class="layui-inline"/>
+            <label class="layui-form-label " >血型</label>
+            <div class="layui-input-inline">
+                <input type="text"  lay-verify="required" th:value="${session.older.bloodType}" disabled class="layui-input">
+            </div>
+            <label class="layui-form-label " >过敏</label>
+            <div class="layui-input-inline">
+                <input type="text"  lay-verify="required" th:value="${session.older.allergy}" disabled class="layui-input">
+            </div>
+            <label class="layui-form-label " >寝室号</label>
+            <div class="layui-input-inline">
+                <input type="text"  lay-verify="required" th:value="${session.older.dorm.dormitory}" disabled class="layui-input">
+            </div>
+        </div>
+
+
+        <div class="layui-form-item" >
+            <div class="layui-inline"/>
+            <label class="layui-form-label "style="width: 200px" >心率(60～100次/分)</label>
+            <div class="layui-input-inline">
+                <input type="text"  lay-verify="required" th:value="${session.older.heartRate}" disabled class="layui-input">
+            </div>
+
+                <label class="layui-form-label " style="width: 200px" >血压(90～139mmHg)</label>
+                <div class="layui-input-inline">
+                    <input type="text"  lay-verify="required" th:value="${session.older.bloodPressure}" disabled class="layui-input">
+                </div>
+
+
+                <label class="layui-form-label" style="width: 200px">血糖(3.92～7.0mmol/L)</label>
+                <div class="layui-input-inline">
+                    <input type="text"  lay-verify="required" th:value="${session.older.bloodSugar}" disabled class="layui-input">
+                </div>
+        </div>
+    </div>
+</form>
+</div>
+
+
+<script th:src="@{/static/lib/layui-v2.5.5/layui.js}" charset="utf-8"></script>
+<script>
+    layui.use(['form', 'table','layer','laypage'], function () {
+        const form = layui.form
+    })
+</script>
+
+</body>
+</html>

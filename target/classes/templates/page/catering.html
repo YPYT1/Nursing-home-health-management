@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <head th:include="commom::title('养老院后台管理系统')"></head>
+</head>
+
+<body>
+<div class="layuimini-container">
+    <div class="layuimini-main">
+
+        <fieldset class="table-search-fieldset">
+            <legend>搜索信息</legend>
+            <div style="margin: 10px 10px 10px 10px">
+                 <div class="layui-form-item">
+                        <div class="layui-inline layui-form-pane">
+                            <label class="layui-form-label">选择时间</label>
+                            <div class="layui-input-inline">
+                                <input type="text" id="monTime" name="monTime" autocomplete="off" class="layui-input">
+                            </div>
+                        </div>
+                        <div class="layui-inline">
+                            <button type="submit" id="ss" class="layui-btn layui-btn-primary"  lay-submit lay-filter="data-search-btn"><i class="layui-icon"></i> 搜 索</button>
+                        </div>
+                    </div>
+             </div>
+        </fieldset>
+
+        <!-- 头 工 具 栏 -->
+        <script type="text/html" id="toolbarDemo" th:if="${session.usr}==null">
+            <div class="layui-btn-container">
+                <button class="layui-btn layui-btn-normal layui-btn-sm data-add-btn" lay-event="add"> 添加 </button>
+                <button class="layui-btn layui-btn-sm layui-btn-danger data-delete-btn" lay-event="delete"> 删除 </button>
+            </div>
+        </script>
+
+        <!-- 表 格 信 息 -->
+        <table class="layui-hide" id="currentTableId" lay-filter="currentTableFilter"></table>
+
+        <!-- 行 工 具 栏 -->
+        <script type="text/html" id="currentTableBar">
+            <a th:if="${session.usr}==null" class="layui-btn layui-btn-normal layui-btn-xs data-count-edit" lay-event="edit">编辑</a>
+            <a th:if="${session.usr}==null" class="layui-btn layui-btn-xs layui-btn-danger data-count-delete" lay-event="delete">删除</a>
+            <a th:if="${session.usr}!=null" class="layui-btn layui-btn-xs layui-btn-danger data-count-delete">无权限</a>
+        </script>
+
+        <script type="text/html" id="currentTableBar" th:if="${session.usr}!=null">
+            <a class="layui-btn layui-btn-xs layui-btn-danger data-count-delete">无权限</a>
+        </script>
+
+    </div>
+</div>
+<script th:src="@{/static/lib/layui-v2.5.5/layui.js}" charset="utf-8"></script>
+<script>
+    layui.use(['form', 'table','laydate','layer','laypage'], function () {
+        const $ = layui.jquery,
+            form = layui.form,
+            layer = layui.layer,
+            laydate=layui.laydate,
+            table = layui.table;
+
+        //执行一个laydate实例
+        laydate.render({
+            elem: '#monTime',
+            type: 'month'
+        });
+
+
+        table.render({
+            elem: '#currentTableId',
+            url: '/root/catering',
+            limits: [3, 5, 10, 20],
+            limit: 10,
+            page: true,
+            toolbar: '#toolbarDemo',
+            defaultToolbar: ['filter', 'exports', 'print', {
+                title: '提示',
+                layEvent: 'LAYTABLE_TIPS',
+                icon: 'layui-icon-tips'
+            }],
+            cols: [
+                [
+                {type: "checkbox", field: 'center'},
+                {field: 'id', width: 80, title: 'ID', sort: true, align:'center'},
+                {field: 'monName', width: 120, title: '菜肴', align:'center'},
+                {field: 'cost', width: 120, title: '费用', align:'center'},
+                {field: 'monTime', width: 250, title: '日期', align:'center'},
+                {fixed: 'right', width: 200, align:'center',title: '操作', toolbar: '#currentTableBar'}
+            ]
+            ],
+            id: 'testReload'
+        });
+        $('#ss').on('click', function () {
+            // 搜索条件
+            const monTime = $('#monTime').val();
+            table.reload('testReload', {
+                method: 'post'
+                , where: {
+                    'monTime': monTime
+                }
+                , page: {
+                    curr: 1
+                }
+            });
+        });
+
+
+
+        table.on('toolbar(currentTableFilter)', function (obj) {
+            const data = obj.data //获得当前行数据
+                , layEvent = obj.event; //获得 lay-event 对应的值
+            if (obj.event === 'add') {  // 监听添加操作
+                const index = layer.open({
+                    title: '添加',
+                    type: 2,
+                    shade: 0.2,
+                    maxmin: true,
+                    shadeClose: true,
+                    area: ['600px', '380px'],
+                    content: '/view/addMon'
+                });
+                $(window).on("resize", function () {
+                    layer.full(index);
+                });
+            } else if (obj.event === 'delete') {  // 监听删除操作
+
+                var checkStatus = table.checkStatus('testReload');
+                var selectCount = checkStatus.data.length;
+                if(selectCount == 0){
+                    layer.msg('批量删除至少选中一项数据',function(){});
+                    return false;
+                }
+                layer.confirm('真的要删除选中的项吗？',function(index){
+                    layer.close(index);
+                    // 加载层
+                    index = layer.load(1, {shade: [0.1,'#fff']});
+                    var listStr="";
+                    for(var i=0; i<selectCount; i++){
+                        listStr = listStr + "," + checkStatus.data[i].id;
+                    }
+                    $.ajax({
+                        type:'post',
+                        data:{"listStr":listStr},
+                        url:'/root/batchDelMon',
+                        success:function(data){
+                            layer.close(index);
+                            layer.msg(data.msg);
+                            table.reload('testReload');
+                        }
+                    });
+                });
+            }
+        });
+
+
+        table.on('tool(currentTableFilter)', function (obj) {
+            var data = obj.data;
+            if (obj.event === 'edit') {
+                var index = layer.open({
+                    title: '编辑',
+                    type: 2,
+                    shade: 0.2,
+                    maxmin:true,
+                    shadeClose: true,
+                    area: ['600px', '380px'],
+                    content: '/view/modifyMon?id='+data.id,
+                });
+                return false;
+
+            } else if (obj.event === 'delete') {
+                layer.confirm('真的删除行么', function (index) {
+                    del(data.id,obj,index);
+                });
+            }
+        });
+
+        function del(id,obj,index){
+            $.ajax({
+                url:'/root/delMon?id='+id,
+                dataType:'json',
+                type:'post',
+                success:function (data) {
+                    obj.del();
+                    layer.msg(data.msg,{icon: 1,time: 1000});
+                    layer.close(layui.index);
+                    table.reload('testReload');
+                }
+            })
+        }
+
+    });
+</script>
+
+</body>
+</html>

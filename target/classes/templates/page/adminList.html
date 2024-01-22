@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <head th:include="commom::title('养老院后台管理系统')"></head>
+</head>
+
+<body>
+<div class="layuimini-container">
+    <div class="layuimini-main">
+
+        <fieldset class="table-search-fieldset">
+            <legend>搜索信息</legend>
+            <div style="margin: 10px 10px 10px 10px">
+                    <div class="layui-form-item">
+                        <div class="layui-inline layui-form-pane">
+                            <label class="layui-form-label">管理员姓名</label>
+                            <div class="layui-input-inline">
+                                <input type="text" id="adminName" name="adminName" value=""  autocomplete="off" class="layui-input">
+                            </div>
+                        </div>
+                        <div class="layui-inline">
+                            <button type="submit" id="ss" class="layui-btn layui-btn-primary" lay-submit lay-filter="data-search-btn">
+                                <i class="layui-icon"></i> 搜 索</button>
+                        </div>
+                    </div>
+            </div>
+        </fieldset>
+
+        <!-- 头 工 具 栏 -->
+        <script type="text/html" id="toolbarDemo" th:if="${session.root}!=null">
+            <div class="layui-btn-container">
+                <button class="layui-btn layui-btn-normal layui-btn-sm data-add-btn" lay-event="add"> 添加 </button>
+                <button class="layui-btn layui-btn-sm layui-btn-danger data-delete-btn" id="delete" lay-event="delete"> 删除 </button>
+            </div>
+        </script>
+
+        <!-- 表 格 信 息 -->
+        <table class="layui-hide" id="currentTableId" lay-filter="currentTableFilter"></table>
+
+        <!-- 行 工 具 栏 -->
+        <script type="text/html" id="currentTableBar">
+            <a th:if="${session.root}!=null" class="layui-btn layui-btn-normal layui-btn-xs data-count-edit" lay-event="edit">编辑</a>
+            <a th:if="${session.root}!=null" class="layui-btn layui-btn-xs layui-btn-danger data-count-delete" lay-event="delete">删除</a>
+            <a th:if="${session.root}==null" class="layui-btn layui-btn-xs layui-btn-danger data-count-delete">无权限</a>
+        </script>
+
+
+    </div>
+</div>
+<script th:src="@{/static/lib/layui-v2.5.5/layui.js}" charset="utf-8"></script>
+<script>
+    layui.use(['form', 'table','layer','laypage'], function () {
+        const $ = layui.jquery,
+            form = layui.form,
+            layer = layui.layer,
+            table = layui.table;
+
+        table.render({
+            elem: '#currentTableId',
+            id: 'testReload',
+            url: '/root/adminList',
+            limits: [5, 10, 15, 20],
+            limit: 10,
+            page: true,
+            toolbar: '#toolbarDemo',
+            defaultToolbar: ['filter', 'exports', 'print', {
+                title: '提示',
+                layEvent: 'LAYTABLE_TIPS',
+                icon: 'layui-icon-tips'
+            }],
+            cols: [
+                [
+                {type: "checkbox", field: 'center'},
+                {field: 'adminId', width: 80, title: 'ID', sort: true, align:'center'},
+                {field: 'adminLogin', width: 120, title: '登录名', align:'center'},
+                {field: 'adminName', width: 120, title: '真实姓名', align:'center'},
+                {field: 'adminTel', width: 250, title: '电话', align:'center'},
+                {field: 'adminSex', width: 80, title: '性别', sort: true, align:'center'},
+                {fixed: 'right', width: 200, align:'center',title: '操作', toolbar: '#currentTableBar'}
+            ]
+            ]
+        });
+
+
+        $('#ss').on('click', function () {
+            // 搜索条件
+            var adminName = $('#adminName').val();
+            table.reload('testReload', {
+                method: 'post'
+                , where: {
+                    'adminName': adminName
+                }
+                , page: {
+                    curr: 1
+                }
+            });
+        });
+
+
+
+        /** 监听头工具栏 */
+        table.on('toolbar(currentTableFilter)', function (obj) {
+            const data = obj.data //获得当前行数据
+                , layEvent = obj.event; //获得 lay-event 对应的值
+            if (obj.event === 'add') {  // 监听添加操作
+                const index = layer.open({
+                    title: '添加管理员',
+                    type: 2,
+                    shade: 0.2,
+                    maxmin: true,
+                    shadeClose: true,
+                    area: ['600px', '320px'],
+                    content: '/view/addAdmin'
+                });
+            } else if (obj.event === 'delete') {
+                    var checkStatus = table.checkStatus('testReload');
+                    var selectCount = checkStatus.data.length;
+                console.log(checkStatus);
+                console.log(selectCount);
+                    if(selectCount == 0){
+                        layer.msg('批量删除至少选中一项数据',function(){});
+                        return false;
+                    }
+                    layer.confirm('真的要删除选中的项吗？',function(index){
+                        layer.close(index);
+                        // 加载层
+                        index = layer.load(1, {shade: [0.1,'#fff']});
+                        var listStr="";
+                        for(var i=0; i<selectCount; i++){
+                            listStr = listStr + "," + checkStatus.data[i].adminId;
+                        }
+                        $.ajax({
+                            type:'post',
+                            data:{"listStr":listStr},
+                            url:'/root/batchDelAdmin',
+                            success:function(data){
+                                layer.close(index);
+                                layer.msg(data.msg);
+                                table.reload('testReload');
+                            }
+                        });
+                    })
+
+            }
+        });
+
+
+        table.on('tool(currentTableFilter)', function (obj) {
+            var data = obj.data;
+            if (obj.event === 'edit') {
+                var index = layer.open({
+                    title: '编辑用户',
+                    type: 2,
+                    shade: 0.2,
+                    maxmin:true,
+                    shadeClose: true,
+                    area: ['600px', '320px'],
+                    content: '/view/modifyAdmin?adminId='+data.adminId,
+                });
+                return false;
+            } else if (obj.event === 'delete') {
+                layer.confirm('真的删除行么', function (index) {
+                    del(data.adminId,obj,index);
+                });
+            }
+        });
+
+        function del(adminId,obj,index){
+            $.ajax({
+                url:'/root/delAdmin?adminId='+adminId,
+                dataType:'json',
+                type:'post',
+                success:function (data) {
+                    obj.del(); //删除对应行（tr）的DOM结构
+                    layer.msg(data.msg,{icon: 1,time: 1000});
+                    layer.close(layui.index);
+                    table.reload('testReload');
+                }
+            })
+        }
+
+
+    });
+</script>
+
+</body>
+</html>

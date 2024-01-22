@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <head th:include="commom::title('养老院后台管理系统')"></head>
+</head>
+
+<body>
+<div class="layuimini-container">
+    <div class="layuimini-main">
+
+        <fieldset class="table-search-fieldset">
+            <legend>搜索信息</legend>
+            <div style="margin: 10px 10px 10px 10px">
+                <div class="layui-form-item">
+                    <div class="layui-inline layui-form-pane">
+                        <label class="layui-form-label">用户姓名</label>
+                        <div class="layui-input-inline">
+                            <input autocomplete="off" class="layui-input" id="usrName" name="usrName" type="text">
+                        </div>
+                    </div>
+                    <div class="layui-inline">
+                        <button class="layui-btn layui-btn-primary" id="ss" lay-filter="data-search-btn" lay-submit
+                                type="submit"><i class="layui-icon"></i> 搜 索
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </fieldset>
+
+        <!-- 头 工 具 栏 -->
+        <script id="toolbarDemo" type="text/html">
+            <div class="layui-btn-container">
+                <button class="layui-btn layui-btn-normal layui-btn-sm data-add-btn" lay-event="add"> 添加</button>
+                <button class="layui-btn layui-btn-sm layui-btn-danger data-delete-btn" lay-event="delete"> 删除</button>
+            </div>
+        </script>
+
+        <!-- 表 格 信 息 -->
+        <table class="layui-hide" id="currentTableId" lay-filter="currentTableFilter"></table>
+
+        <!-- 行 工 具 栏 -->
+        <script id="currentTableBar" type="text/html">
+            <a class="layui-btn layui-btn-normal layui-btn-xs data-count-edit" lay-event="edit">编辑</a>
+            <a class="layui-btn layui-btn-xs layui-btn-danger data-count-delete" lay-event="delete">删除</a>
+        </script>
+
+    </div>
+</div>
+<script charset="utf-8" th:src="@{/static/lib/layui-v2.5.5/layui.js}"></script>
+<script>
+    layui.use(['form', 'table', 'layer', 'laypage'], function () {
+        const $ = layui.jquery,
+            form = layui.form,
+            layer = layui.layer,
+            table = layui.table;
+
+        table.render({
+            elem: '#currentTableId',
+            url: '/root/userList',
+            limits: [3, 5, 10, 20],
+            limit: 10,
+            page: true,
+            toolbar: '#toolbarDemo',
+            defaultToolbar: ['filter', 'exports', 'print', {
+                title: '提示',
+                layEvent: 'LAYTABLE_TIPS',
+                icon: 'layui-icon-tips'
+            }],
+            cols: [
+                [
+                    {type: "checkbox", field: 'center'},
+                    {field: 'usrId', width: 80, title: 'ID', sort: true, align: 'center'},
+                    {field: 'usrLogin', width: 120, title: '登录名', align: 'center'},
+                    {field: 'usrName', width: 120, title: '用户姓名', align: 'center'},
+                    {field: 'usrSex', width: 80, title: '性别', sort: true, align: 'center'},
+                    {field: 'usrTel', width: 250, title: '电话', align: 'center'},
+                    {field: 'usrAddr', width: 200, title: '地址', align: 'center'},
+                    {field: 'olderName', width: 150, title: '家属', align: 'center'},
+                    {fixed: 'right', width: 200, align: 'center', title: '操作', toolbar: '#currentTableBar'}
+                ]
+            ],
+            id: 'testReload'
+        });
+
+        $('#ss').on('click', function () {
+            // 搜索条件
+            const usrName = $('#usrName').val();
+            table.reload('testReload', {
+                method: 'post'
+                , where: {
+                    'usrName': usrName
+                }
+                , page: {
+                    curr: 1
+                }
+            });
+        });
+
+
+        /**
+         * toolbar监听事件
+         */
+        table.on('toolbar(currentTableFilter)', function (obj) {
+            const data = obj.data //获得当前行数据
+                , layEvent = obj.event; //获得 lay-event 对应的值
+            if (obj.event === 'add') {  // 监听添加操作
+                const index = layer.open({
+                    title: '添加用户',
+                    type: 2,
+                    shade: 0.2,
+                    maxmin: true,
+                    shadeClose: true,
+                    area: ['600px', '380px'],
+                    content: '/view/addUsr'
+                });
+                $(window).on("resize", function () {
+                    layer.full(index);
+                });
+            } else if (obj.event === 'delete') {  // 监听删除操作
+
+                var checkStatus = table.checkStatus('testReload');
+                var selectCount = checkStatus.data.length;
+
+                if (selectCount == 0) {
+                    layer.msg('批量删除至少选中一项数据', function () {
+                    });
+                    return false;
+                }
+                layer.confirm('真的要删除选中的项吗？', function (index) {
+                    layer.close(index);
+                    // 加载层
+                    index = layer.load(1, {shade: [0.1, '#fff']});
+                    var listStr = "";
+                    for (var i = 0; i < selectCount; i++) {
+                        listStr = listStr + "," + checkStatus.data[i].usrId;
+                    }
+                    $.ajax({
+                        type: 'post',
+                        data: {"listStr": listStr},
+                        url: '/root/batchDelUsr',
+                        success: function (data) {
+                            layer.close(index);
+                            layer.msg(data.msg);
+                            table.reload('testReload');
+                        }
+                    });
+                });
+            }
+        });
+
+
+        table.on('tool(currentTableFilter)', function (obj) {
+            var data = obj.data;
+            if (obj.event === 'edit') {
+                var index = layer.open({
+                    title: '编辑用户',
+                    type: 2,
+                    shade: 0.2,
+                    maxmin: true,
+                    shadeClose: true,
+                    area: ['600px', '380px'],
+                    content: '/view/modifyUsr?usrId=' + data.usrId,
+                });
+                return false;
+
+            } else if (obj.event === 'delete') {
+                layer.confirm('真的删除行么', function (index) {
+                    del(data.usrId, obj, index);
+                });
+            }
+        });
+
+        function del(usrId, obj, index) {
+            $.ajax({
+                url: '/root/delUsr?usrId=' + usrId,
+                dataType: 'json',
+                type: 'post',
+                success: function (data) {
+                    obj.del();
+                    layer.msg(data.msg, {icon: 1, time: 1000});
+                    layer.close(layui.index);
+                    table.reload('testReload');
+                }
+            })
+        }
+
+    });
+</script>
+
+</body>
+</html>

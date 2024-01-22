@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <head th:include="commom::title('修改管理员信息')"></head>
+    <style>
+        body {
+            background-color: #ffffff;
+        }
+    </style>
+</head>
+<body>
+<div class="layui-form layui-form-pane">
+
+    <div class="layui-form-item" >
+        <label class="layui-form-label required">登录名</label>
+        <div class="layui-input-block">
+            <input type="text" name="adminLogin" lay-verify="required" lay-reqtext="登录名不能为空" placeholder="请输入登录名"
+                   th:value="${adminInfo.adminLogin}" class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item" >
+        <label class="layui-form-label required" >用户名</label>
+        <div class="layui-input-block">
+            <input type="text" name="adminName" lay-verify="required" lay-reqtext="用户名不能为空" placeholder="请输入用户名" th:value="${adminInfo.adminName}" class="layui-input">
+        </div>
+    </div>
+
+    <div class="layui-form-item"  pane>
+        <label class="layui-form-label required">性别</label>
+        <div class="layui-input-block">
+            <input type="radio" name="adminSex" value="男" title="男" th:if="${adminInfo.adminSex.equals('男')}" disabled checked>
+            <input type="radio" name="adminSex" value="女" title="女" th:if="${adminInfo.adminSex.equals('女')}" disabled checked>
+        </div>
+    </div>
+    <div class="layui-form-item" >
+        <label class="layui-form-label required">电话</label>
+        <div class="layui-input-block">
+            <input type="text" name="adminTel" lay-verify="required" lay-reqtext="手机不能为空" placeholder="请输入手机" th:value="${adminInfo.adminTel}" class="layui-input">
+        </div>
+    </div>
+    <input type="hidden" name="adminId"  th:value="${adminInfo.adminId}">
+
+    <div class="layui-form-item">
+        <div class="layui-input-block" >
+            <button class="layui-btn layui-btn-normal" style="width: 80%"  lay-submit lay-filter="altBtn">确认修改</button>
+        </div>
+    </div>
+</div>
+<script th:src="@{/static/lib/layui-v2.5.5/layui.js}" charset="utf-8"></script>
+<script>
+    layui.use(['form','layer'], function () {
+        const form = layui.form,
+            layer = layui.layer,
+            $ = layui.$;
+
+
+        form.on('submit(altBtn)', function (data) {
+            $.ajax({
+                url:'/root/modifyAdmin',
+                data:data.field,
+                dataType:'json',
+                type:'post',
+                success:function (data) {
+                    if (data.code==200){
+                        layer.msg(data.msg,{icon:1});
+                    }else{
+                        layer.msg(data.msg,{icon:2});
+                    }
+                    setTimeout(function () {
+                        const index = parent.layer.getFrameIndex(window.name);
+                        parent.layer.close(index);
+                        window.parent.location.reload();
+                    }, 1000);
+                }
+            })
+            return false;
+        });
+
+    });
+</script>
+</body>
+</html>

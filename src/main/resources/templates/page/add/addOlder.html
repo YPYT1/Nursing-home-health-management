@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <head th:include="commom::title('添加管理员')"></head>
+    <style>
+        body {
+            background-color: #ffffff;
+        }
+    </style>
+</head>
+<body>
+<div class="layui-form layui-form-pane">
+    <div class="layui-form-item" >
+        <label class="layui-form-label required">姓名</label>
+        <div class="layui-input-block">
+            <input type="text" name="olderName" lay-verify="required" placeholder="请输入姓名" value="" class="layui-input">
+        </div>
+    </div>
+
+    <div class="layui-form-item"  pane>
+        <label class="layui-form-label required">性别</label>
+        <div class="layui-input-block">
+            <input type="radio" name="olderSex" value="男" title="男" checked="">
+            <input type="radio" name="olderSex" value="女" title="女">
+        </div>
+    </div>
+    <div class="layui-form-item" >
+        <label class="layui-form-label required" >电话</label>
+        <div class="layui-input-block">
+            <input type="text" name="olderTel" lay-verify="required" placeholder="请输入电话" value="" class="layui-input">
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <label class="layui-form-label required">地址</label>
+        <div class="layui-input-block">
+            <input type="text" name="olderAddr" lay-verify="required" placeholder="请输入地址" value="" class="layui-input">
+        </div>
+    </div>
+
+    <div class="layui-form-item" >
+        <label class="layui-form-label required">身份证号码</label>
+        <div class="layui-input-block">
+            <input type="text" name="olderIdcard" lay-verify="required" placeholder="请输入身份证号码"  value="" class="layui-input">
+        </div>
+    </div>
+
+
+    <div class="layui-form-item" >
+        <label class="layui-form-label required">入住时间</label>
+        <div class="layui-input-block">
+            <input type="text" id="inTime" name="inTime" lay-verify="required"  value="" class="layui-input">
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <label class="layui-form-label required">出院时间</label>
+        <div class="layui-input-block">
+            <input type="text" id="outTime" name="outTime" lay-verify="required"   value="" class="layui-input">
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <div class="layui-input-block" >
+            <button class="layui-btn layui-btn-normal" style="width: 80%"  lay-submit lay-filter="addBtn">确认添加</button>
+        </div>
+    </div>
+</div>
+<script th:src="@{/static/lib/layui-v2.5.5/layui.js}" charset="utf-8"></script>
+<script>
+    layui.use(['form','layer','laydate'], function () {
+        const form = layui.form,
+            layer = layui.layer,
+            laydate=layui.laydate,
+            $ = layui.$;
+
+        laydate.render({
+            elem: '#inTime' ,
+            type: 'date',
+            value: new Date()
+        });
+
+        laydate.render({
+            elem: '#outTime' ,
+            type: 'date',
+            value: new Date()
+        });
+
+        form.on('submit(addBtn)', function (data) {
+            $.ajax({
+                url:'/root/addOlder',
+                data:data.field,
+                dataType:'json',
+                type:'post',
+                success:function (data) {
+                    if (data.code==200){
+                        layer.msg(data.msg,{icon:1});
+                    }else{
+                        layer.msg(data.msg,{icon:2});
+                    }
+                    setTimeout(function () {
+                        var index = parent.layer.getFrameIndex(window.name);
+                        parent.layer.close(index);
+                        window.parent.location.reload();
+                    }, 1000);
+                }
+            })
+            return false;
+        });
+
+    });
+</script>
+</body>
+</html>

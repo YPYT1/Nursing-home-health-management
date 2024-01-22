@@ -1,0 +1,81 @@
+{
+  "homeInfo": {
+    "title": "首页",
+    "href": "view/welcome1"
+  },
+  "logoInfo": {
+    "title": "用户中心",
+    "image": "static/images/lg.png",
+    "href": ""
+  },
+  "menuInfo": [
+    {
+      "title": "",
+      "icon": "fa fa-address-book",
+      "href": "",
+      "target": "_self",
+      "child": [
+        {
+          "title": "基本信息",
+          "href": "",
+          "icon": "fa fa-gears",
+          "target": "_self",
+          "child": [
+            {
+              "title": "个人信息",
+              "href": "view/usr",
+              "icon": "fa fa-tachometer",
+              "target": "_self"
+            },
+            {
+              "title": "家人情况",
+              "href": "view/older",
+              "icon": "fa fa-tachometer",
+              "target": "_self"
+            }
+          ]
+        },
+        {
+          "title": "生活情况",
+          "href": "",
+          "icon": "fa fa-gears",
+          "target": "_self",
+          "child": [
+            {
+              "title": "每月餐饮",
+              "href": "view/catering",
+              "icon": "fa fa-tachometer",
+              "target": "_self"
+            },
+            {
+              "title": "外出报备",
+              "href": "view/goOutUsr",
+              "icon": "fa fa-tachometer",
+              "target": "_self"
+            }
+          ]
+        },
+        {
+          "title": "收费标准",
+          "href": "",
+          "icon": "fa fa-flag-o",
+          "target": "_self",
+          "child": [
+            {
+              "title": "入住费用",
+              "href": "view/checkIn",
+              "icon": "fa fa-stumbleupon-circle",
+              "target": "_self"
+            },
+            {
+              "title": "护理费用",
+              "href": "view/nursing",
+              "icon": "fa fa-viacoin",
+              "target": "_self"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

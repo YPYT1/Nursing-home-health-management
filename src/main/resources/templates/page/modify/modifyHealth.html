@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <head th:include="commom::title('新建健康档案')"></head>
+    <style>
+        body {
+            background-color: #ffffff;
+        }
+    </style>
+</head>
+<body>
+<div class="layui-form layui-form-pane">
+    <div class="layui-form-item" >
+        <label class="layui-form-label required">姓名</label>
+        <div class="layui-input-block">
+            <input type="text" name="name" lay-verify="required" placeholder="姓名" th:value="${healthRecord.name}" class="layui-input">
+        </div>
+        <div class="layui-form-item"  pane>
+            <label class="layui-form-label required">性别</label>
+            <div class="layui-input-block">
+                <input type="radio" name="sex" value="男" title="男" th:if="${healthRecord.sex}=='男'" disabled checked>
+                <input type="radio" name="sex" value="女" title="女" th:if="${healthRecord.sex}=='女'" disabled checked>
+            </div>
+        </div>
+        <label class="layui-form-label required">出生</label>
+        <div class="layui-input-block">
+            <input type="text" name="born" lay-verify="required"  placeholder="yyyy-MM" th:value="${healthRecord.born}" class="layui-input">
+        </div>
+        <label class="layui-form-label required">身高</label>
+        <div class="layui-input-block">
+            <input type="text" name="height" lay-verify="required"  th:value="${healthRecord.height}" class="layui-input">
+        </div>
+        <label class="layui-form-label required">体重</label>
+        <div class="layui-input-block">
+            <input type="text" name="weight" lay-verify="required"  th:value="${healthRecord.weight}" class="layui-input">
+        </div>
+        <label class="layui-form-label required">血型</label>
+        <div class="layui-input-block">
+            <input type="text" name="bloodType" lay-verify="required" th:value="${healthRecord.bloodType}" class="layui-input">
+        </div>
+        <label class="layui-form-label required">过敏</label>
+        <div class="layui-input-block">
+            <input type="text" name="allergy" lay-verify="required" th:value="${healthRecord.allergy}" class="layui-input">
+        </div>
+        <label class="layui-form-label required">心率</label>
+        <div class="layui-input-block">
+            <input type="text" name="heartRate" lay-verify="required" th:value="${healthRecord.heartRate}" class="layui-input">
+        </div>
+        <label class="layui-form-label required" >血压</label>
+        <div class="layui-input-block">
+            <input type="text" name="bloodPressure" lay-verify="required" th:value="${healthRecord.bloodPressure}" class="layui-input">
+        </div>
+        <label class="layui-form-label required" >血糖</label>
+        <div class="layui-input-block">
+            <input type="text" name="bloodSugar" lay-verify="required" th:value="${healthRecord.bloodSugar}" class="layui-input">
+        </div>
+        <label class="layui-form-label required" >吸烟</label>
+        <div class="layui-input-block">
+            <input type="text" name="smoke" lay-verify="required" th:value="${healthRecord.smoke}" class="layui-input">
+        </div>
+        <label class="layui-form-label required" >体检时间</label>
+        <div class="layui-input-block">
+            <input type="text" id="cTime" name="createTime" lay-verify="required" class="layui-input">
+        </div>
+    </div><input type="hidden" name="id" th:value="${healthRecord.id}">
+
+
+
+
+
+    <div class="layui-form-item">
+        <div class="layui-input-block" >
+            <button class="layui-btn layui-btn-normal" style="width: 80%"  lay-submit lay-filter="altBtn">确认修改</button>
+        </div>
+    </div>
+</div>
+<script th:src="@{/static/lib/layui-v2.5.5/layui.js}" charset="utf-8"></script>
+<script>
+    layui.use(['form','layer','laydate'], function () {
+        const form = layui.form,
+            layer = layui.layer,
+            laydate=layui.laydate,
+            $ = layui.$;
+
+        laydate.render({
+            elem: '#cTime' ,
+            type: 'date',
+            value: new Date()
+        });
+
+
+        form.on('submit(altBtn)', function (data) {
+            $.ajax({
+                url:'/root/modifyHealth',
+                data:data.field,
+                dataType:'json',
+                type:'post',
+                success:function (data) {
+                    if (data.code==200){
+                        layer.msg(data.msg,{icon:1});
+                    }else{
+                        layer.msg(data.msg,{icon:2});
+                    }
+                    setTimeout(function () {
+                        var index = parent.layer.getFrameIndex(window.name);
+                        parent.layer.close(index);
+                        window.parent.location.reload();
+                    }, 1000);
+                }
+            })
+            return false;
+        });
+
+    });
+</script>
+</body>
+</html>

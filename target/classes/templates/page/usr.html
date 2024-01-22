@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <head th:include="commom::title('养老院后台管理系统')"></head>
+</head>
+<body>
+
+<div style="height: 20px"></div>
+
+<div style="text-align: center; border-style: inset">
+    <h3>个人信息</h3>
+</div>
+
+<div style="text-align: center">
+<form class="layui-form layui-form-pane" >
+    <div style="border-style: outset">
+        <div class="layui-form-item" >
+            <div class="layui-inline"/>
+            <label class="layui-form-label required">登录名</label>
+            <div class="layui-input-inline">
+                <input type="text"  lay-verify="required" th:value="${session.usr.usrLogin}" disabled class="layui-input">
+            </div>
+        </div>
+
+        <div class="layui-form-item" >
+            <div class="layui-inline"/>
+            <label class="layui-form-label required" >真实姓名</label>
+            <div class="layui-input-inline">
+                <input type="text"  lay-verify="required" th:value="${session.usr.usrName}" disabled class="layui-input">
+            </div>
+        </div>
+
+        <div class="layui-form-item" >
+            <div class="layui-inline"/>
+            <label class="layui-form-label required" >性别</label>
+            <div class="layui-input-inline">
+                <input type="text"  lay-verify="required" th:value="${session.usr.usrSex}" disabled class="layui-input">
+            </div>
+        </div>
+
+        <div class="layui-form-item" >
+            <div class="layui-inline"/>
+            <label class="layui-form-label required" >电话</label>
+            <div class="layui-input-inline">
+                <input type="text"  lay-verify="required" th:value="${session.usr.usrTel}" disabled class="layui-input">
+            </div>
+        </div>
+
+        <div class="layui-form-item" >
+            <div class="layui-inline"/>
+            <label class="layui-form-label required" >家庭住址</label>
+            <div class="layui-input-inline">
+                <input type="text"  lay-verify="required" th:value="${session.usr.usrAddr}" disabled class="layui-input">
+            </div>
+        </div>
+
+
+        <div class="layui-form-item" >
+            <div class="layui-inline"/>
+            <label class="layui-form-label required" >家属</label>
+            <div class="layui-input-inline">
+                <input type="text"  lay-verify="required" th:value="${session.usr.olderName}" disabled class="layui-input">
+            </div>
+        </div>
+    </div>
+</form>
+</div>
+
+<script th:src="@{/static/lib/layui-v2.5.5/layui.js}" charset="utf-8"></script>
+<script>
+    layui.use(['form', 'table','layer','laypage'], function () {
+        const form = layui.form
+    })
+</script>
+
+</body>
+</html>
